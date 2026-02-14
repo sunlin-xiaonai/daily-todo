@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>每日待办</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #F7F5F0;
+      --bg-secondary: #EFECE6;
+      --text-primary: #2C2C2C;
+      --text-secondary: #7A7A7A;
+      --accent: #B85C38;
+      --accent-light: #E8D5C4;
+      --success: #6B8F71;
+      --border: #D4CFC7;
+      --shadow: rgba(44, 44, 44, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background-color: var(--bg-primary);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 80px;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(184, 92, 56, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(107, 143, 113, 0.03) 0%, transparent 50%);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 16px;
+      background: var(--bg-primary);
+      border-radius: 12px;
+      box-shadow: 
+        0 4px 24px var(--shadow),
+        0 1px 3px rgba(0, 0, 0, 0.04);
+      padding: 48px;
+      position: relative;
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 24px;
+      right: 24px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-family: 'Noto Serif SC', Georgia, serif;
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: 0.15em;
+      margin-bottom: 12px;
+    }
+
+    .date {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      font-weight: 300;
+      letter-spacing: 0.05em;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .task-input {
+      flex: 1;
+      border: none;
+      border-bottom: 2px solid var(--border);
+      background: transparent;
+      padding: 12px 4px;
+      font-size: 1rem;
+      font-family: inherit;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    .task-input::placeholder {
+      color: var(--text-secondary);
+      font-weight: 300;
+    }
+
+    .task-input:focus {
+      border-color: var(--accent);
+    }
+
+    .add-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      background: transparent;
+      color: var(--accent);
+      font-size: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .add-btn:hover {
+      background: var(--accent);
+      color: var(--bg-primary);
+      transform: scale(1.05);
+    }
+
+    .add-btn:active {
+      transform: scale(0.95);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-4px); }
+      40%, 80% { transform: translateX(4px); }
+    }
+
+    .shake {
+      animation: shake 0.3s ease;
+    }
+
+    .task-list {
+      list-style: none;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .task-item:last-child {
+      border-bottom: none;
+    }
+
+    .checkbox-wrapper {
+      position: relative;
+      width: 22px;
+      height: 22px;
+      margin-right: 16px;
+      flex-shrink: 0;
+    }
+
+    .checkbox {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--border);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .task-item:hover .checkbox {
+      border-color: var(--success);
+    }
+
+    .checkbox.checked {
+      background: var(--success);
+      border-color: var(--success);
+    }
+
+    .checkbox-check {
+      width: 6px;
+      height: 10px;
+      border: solid var(--bg-primary);
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg) scale(0);
+      transition: transform 0.2s ease;
+    }
+
+    .checkbox.checked .checkbox-check {
+      transform: rotate(45deg) scale(1);
+    }
+
+    .task-text {
+      flex: 1;
+      font-size: 1rem;
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .task-item.completed .task-text {
+      color: var(--text-secondary);
+      text-decoration: line-through;
+      text-decoration-color: var(--success);
+    }
+
+    .delete-btn {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 1.25rem;
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .task-item:hover .delete-btn {
+      opacity: 1;
+    }
+
+    .delete-btn:hover {
+      color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 0;
+      color: var(--text-secondary);
+    }
+
+    .empty-state-text {
+      font-family: 'Noto Serif SC', Georgia, serif;
+      font-size: 1.125rem;
+      margin-bottom: 8px;
+    }
+
+    .empty-state-sub {
+      font-size: 0.875rem;
+      font-weight: 300;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .task-item {
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideOut {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+    }
+
+    .task-item.deleting {
+      animation: slideOut 0.25s ease-out forwards;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 32px 20px;
+        box-shadow: none;
+        background: transparent;
+      }
+
+      h1 {
+        font-size: 1.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>每日待办</h1>
+      <p class="date" id="current-date"></p>
+    </header>
+
+    <div class="input-group">
+      <input 
+        type="text" 
+        class="task-input" 
+        id="task-input" 
+        placeholder="添加新任务..." 
+        maxlength="100"
+      >
+      <button class="add-btn" id="add-btn">+</button>
+    </div>
+
+    <ul class="task-list" id="task-list"></ul>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'daily-todo-tasks';
+    
+    let tasks = [];
+
+    function formatDate() {
+      const now = new Date();
+      const options = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        weekday: 'long'
+      };
+      return now.toLocaleDateString('zh-CN', options);
+    }
+
+    function loadTasks() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        try {
+          tasks = JSON.parse(stored);
+        } catch (e) {
+          tasks = [];
+        }
+      }
+    }
+
+    function saveTasks() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+    }
+
+    function renderTasks() {
+      const list = document.getElementById('task-list');
+      
+      if (tasks.length === 0) {
+        list.innerHTML = `
+          <li class="empty-state">
+            <p class="empty-state-text">今日无事一身轻</p>
+            <p class="empty-state-sub">添加一个任务开始吧</p>
+          </li>
+        `;
+        return;
+      }
+
+      list.innerHTML = tasks.map(task => `
+        <li class="task-item ${task.completed ? 'completed' : ''}" data-id="${task.id}">
+          <div class="checkbox-wrapper" onclick="event.stopPropagation(); toggleTask(${task.id})">
+            <div class="checkbox ${task.completed ? 'checked' : ''}">
+              <span class="checkbox-check"></span>
+            </div>
+          </div>
+          <span class="task-text">${escapeHtml(task.text)}</span>
+          <button class="delete-btn" onclick="event.stopPropagation(); deleteTask(${task.id})">×</button>
+        </li>
+      `).join('');
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function addTask() {
+      const input = document.getElementById('task-input');
+      const text = input.value.trim();
+      
+      if (!text) {
+        input.classList.add('shake');
+        setTimeout(() => input.classList.remove('shake'), 300);
+        return;
+      }
+
+      const task = {
+        id: Date.now(),
+        text: text,
+        completed: false,
+        createdAt: new Date().toISOString()
+      };
+
+      tasks.unshift(task);
+      saveTasks();
+      renderTasks();
+      input.value = '';
+    }
+
+    function toggleTask(id) {
+      const task = tasks.find(t => t.id === id);
+      if (task) {
+        task.completed = !task.completed;
+        saveTasks();
+        renderTasks();
+      }
+    }
+
+    function deleteTask(id) {
+      const taskElement = document.querySelector(`.task-item[data-id="${id}"]`);
+      if (taskElement) {
+        taskElement.classList.add('deleting');
+        setTimeout(() => {
+          tasks = tasks.filter(t => t.id !== id);
+          saveTasks();
+          renderTasks();
+        }, 250);
+      }
+    }
+
+    function init() {
+      document.getElementById('current-date').textContent = formatDate();
+      
+      loadTasks();
+      renderTasks();
+
+      document.getElementById('add-btn').addEventListener('click', addTask);
+      
+      document.getElementById('task-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          addTask();
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
