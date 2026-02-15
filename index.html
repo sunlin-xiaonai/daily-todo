@@ -64,7 +64,7 @@
 
     header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 32px;
     }
 
     h1 {
@@ -81,6 +81,61 @@
       color: var(--text-secondary);
       font-weight: 300;
       letter-spacing: 0.05em;
+      margin-bottom: 32px;
+    }
+
+    .verse-container {
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px 20px;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .verse-container::before {
+      content: '"';
+      position: absolute;
+      top: -8px;
+      left: 12px;
+      font-family: 'Noto Serif SC', Georgia, serif;
+      font-size: 4rem;
+      color: var(--accent);
+      opacity: 0.15;
+      line-height: 1;
+    }
+
+    .verse-text {
+      font-family: 'Noto Serif SC', Georgia, serif;
+      font-size: 1rem;
+      color: var(--text-primary);
+      line-height: 1.8;
+      padding: 0 8px;
+      font-weight: 400;
+      margin-bottom: 12px;
+      font-style: italic;
+    }
+
+    .verse-ref {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      font-weight: 300;
+      text-align: right;
+      padding-right: 8px;
+      letter-spacing: 0.05em;
+    }
+
+    .verse-label {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: 0.6875rem;
+      color: var(--accent);
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0.7;
     }
 
     .input-group {
@@ -315,6 +370,12 @@
       <p class="date" id="current-date"></p>
     </header>
 
+    <div class="verse-container" id="verse-container">
+      <span class="verse-label">今日金句</span>
+      <p class="verse-text" id="verse-text"></p>
+      <p class="verse-ref" id="verse-ref"></p>
+    </div>
+
     <div class="input-group">
       <input 
         type="text" 
@@ -331,18 +392,82 @@
 
   <script>
     const STORAGE_KEY = 'daily-todo-tasks';
-    
+
+    const VERSES = [
+      {
+        text: "求你指教我们怎样数算自己的日子，好叫我们得着智慧的心。",
+        ref: "诗篇 90:12"
+      },
+      {
+        text: "你们要谨慎行事，不要像愚昧人，当像智慧人。要爱惜光阴，因为现今的世代邪恶。",
+        ref: "以弗所书 5:15-16"
+      },
+      {
+        text: "其实明天如何，你们还不知道。你们的生命是什么呢？你们原来是一片云雾，出现少时就不见了。",
+        ref: "雅各书 4:14"
+      },
+      {
+        text: "耶和华啊，求你叫我晓得我身之终，我的寿数几何，叫我知道我的生命不长。",
+        ref: "诗篇 39:4-5"
+      },
+      {
+        text: "不要为明日自夸，因为一日要生何事，你尚且不能知道。",
+        ref: "箴言 27:1"
+      },
+      {
+        text: "凡事都有定期，天下万务都有定时。",
+        ref: "传道书 3:1"
+      },
+      {
+        text: "弟兄们，我对你们说，时候减少了。",
+        ref: "哥林多前书 7:29"
+      },
+      {
+        text: "总要趁着还有今日，天天彼此相劝。",
+        ref: "希伯来书 3:13"
+      },
+      {
+        text: "你们务要警醒，在真道上站立得稳，要作大丈夫，要刚强。",
+        ref: "哥林多前书 16:13"
+      },
+      {
+        text: "你们清晨早起，夜晚安歇，吃劳碌得来的饭，本是枉然。惟有耶和华所亲爱的，必叫他安然睡觉。",
+        ref: "诗篇 127:2"
+      },
+      {
+        text: "你们要爱惜光阴，用智慧与外人交往。",
+        ref: "歌罗西书 4:5"
+      },
+      {
+        text: "所以，你们要警醒，因为不知道你们的主是哪一天来到。",
+        ref: "马太福音 24:42"
+      }
+    ];
+
     let tasks = [];
 
     function formatDate() {
       const now = new Date();
-      const options = { 
-        year: 'numeric', 
-        month: 'long', 
+      const options = {
+        year: 'numeric',
+        month: 'long',
         day: 'numeric',
         weekday: 'long'
       };
       return now.toLocaleDateString('zh-CN', options);
+    }
+
+    function getDailyVerse() {
+      const today = new Date();
+      const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
+      const verseIndex = dayOfYear % VERSES.length;
+      return VERSES[verseIndex];
+    }
+
+    function displayDailyVerse() {
+      const verse = getDailyVerse();
+      document.getElementById('verse-text').textContent = verse.text;
+      document.getElementById('verse-ref').textContent = verse.ref;
     }
 
     function loadTasks() {
@@ -438,12 +563,14 @@
 
     function init() {
       document.getElementById('current-date').textContent = formatDate();
-      
+
+      displayDailyVerse();
+
       loadTasks();
       renderTasks();
 
       document.getElementById('add-btn').addEventListener('click', addTask);
-      
+
       document.getElementById('task-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
           addTask();
