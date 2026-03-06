@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>每日待办</title>
+  <title>每日待办 · Daily Todo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-primary: #F7F5F0;
       --bg-secondary: #EFECE6;
+      --bg-card: #FFFCF7;
       --text-primary: #2C2C2C;
       --text-secondary: #7A7A7A;
       --accent: #B85C38;
@@ -18,6 +19,11 @@
       --success: #6B8F71;
       --border: #D4CFC7;
       --shadow: rgba(44, 44, 44, 0.08);
+
+      --blue: #60A5FA;
+      --orange: #FDBA74;
+      --mint: #6EE7B7;
+      --violet: #C4B5FD;
     }
 
     * {
@@ -33,23 +39,23 @@
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding-top: 80px;
-      background-image: 
-        radial-gradient(circle at 20% 30%, rgba(184, 92, 56, 0.03) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(107, 143, 113, 0.03) 0%, transparent 50%);
+      padding: 40px 16px 56px;
+      background-image:
+        radial-gradient(circle at 20% 30%, rgba(184, 92, 56, 0.05) 0%, transparent 55%),
+        radial-gradient(circle at 80% 70%, rgba(107, 143, 113, 0.06) 0%, transparent 50%);
     }
 
     .container {
       width: 100%;
       max-width: 520px;
-      margin: 0 16px;
       background: var(--bg-primary);
-      border-radius: 12px;
-      box-shadow: 
-        0 4px 24px var(--shadow),
-        0 1px 3px rgba(0, 0, 0, 0.04);
-      padding: 48px;
+      border-radius: 18px;
+      box-shadow:
+        0 18px 45px rgba(15, 23, 42, 0.12),
+        0 1px 3px rgba(15, 23, 42, 0.08);
+      padding: 28px 24px 24px;
       position: relative;
+      overflow: hidden;
     }
 
     .container::before {
@@ -63,33 +69,155 @@
     }
 
     header {
-      text-align: center;
-      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 12px;
+    }
+
+    .title-block {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
 
     h1 {
       font-family: 'Noto Serif SC', Georgia, serif;
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: 600;
       color: var(--text-primary);
-      letter-spacing: 0.15em;
-      margin-bottom: 12px;
+      letter-spacing: 0.16em;
     }
 
     .date {
-      font-size: 0.875rem;
+      font-size: 0.85rem;
       color: var(--text-secondary);
       font-weight: 300;
-      letter-spacing: 0.05em;
-      margin-bottom: 32px;
+      letter-spacing: 0.06em;
     }
 
+    .day-sticker {
+      background: radial-gradient(circle at 20% 0%, #FFF7ED, #FFE4E6);
+      border-radius: 999px;
+      padding: 6px 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--accent);
+      box-shadow: 0 4px 10px rgba(248, 113, 113, 0.25);
+      transform: rotate(-2deg);
+    }
+
+    .day-sticker-emoji {
+      font-size: 1.1rem;
+    }
+
+    /* 今日概览卡片 */
+    .overview-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid rgba(212, 207, 199, 0.8);
+      padding: 14px 14px 14px 16px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+      position: relative;
+    }
+
+    .overview-left {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .overview-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-secondary);
+    }
+
+    .overview-main {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .overview-sub {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .overview-highlight {
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    .overview-progress {
+      margin-top: 6px;
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(209, 213, 219, 0.7);
+      overflow: hidden;
+    }
+
+    .overview-progress-bar {
+      height: 100%;
+      width: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--mint), var(--blue));
+      transition: width 0.4s ease-out;
+    }
+
+    .overview-right {
+      width: 82px;
+      height: 82px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 20% 0%, #FDE68A, #FDBA74),
+        radial-gradient(circle at 80% 100%, #A5B4FC, #F9A8D4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 10px 22px rgba(248, 181, 133, 0.65);
+      transform: rotate(3deg);
+    }
+
+    .overview-right::after {
+      content: 'TODAY';
+      position: absolute;
+      bottom: -8px;
+      right: 10px;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      color: #4B5563;
+      background: #FEF3C7;
+      padding: 2px 6px;
+      border-radius: 999px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+      transform: rotate(-4deg);
+    }
+
+    .overview-emoji {
+      font-size: 2rem;
+      filter: drop-shadow(0 4px 4px rgba(148, 163, 184, 0.7));
+    }
+
+    /* 金句卡片 */
     .verse-container {
       background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 24px 20px;
-      margin-bottom: 32px;
+      border-radius: 10px;
+      padding: 20px 18px 18px;
+      margin-bottom: 22px;
       position: relative;
       overflow: hidden;
     }
@@ -97,28 +225,28 @@
     .verse-container::before {
       content: '"';
       position: absolute;
-      top: -8px;
-      left: 12px;
+      top: -14px;
+      left: 10px;
       font-family: 'Noto Serif SC', Georgia, serif;
       font-size: 4rem;
       color: var(--accent);
-      opacity: 0.15;
+      opacity: 0.14;
       line-height: 1;
     }
 
     .verse-text {
       font-family: 'Noto Serif SC', Georgia, serif;
-      font-size: 1rem;
+      font-size: 0.98rem;
       color: var(--text-primary);
       line-height: 1.8;
       padding: 0 8px;
       font-weight: 400;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       font-style: italic;
     }
 
     .verse-ref {
-      font-size: 0.8125rem;
+      font-size: 0.8rem;
       color: var(--text-secondary);
       font-weight: 300;
       text-align: right;
@@ -129,20 +257,21 @@
     .verse-label {
       position: absolute;
       top: 8px;
-      right: 12px;
-      font-size: 0.6875rem;
+      right: 10px;
+      font-size: 0.7rem;
       color: var(--accent);
       font-weight: 400;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
       opacity: 0.7;
     }
 
+    /* 输入区域 */
     .input-group {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 32px;
+      margin-bottom: 16px;
       position: relative;
     }
 
@@ -151,12 +280,12 @@
       border: none;
       border-bottom: 2px solid var(--border);
       background: transparent;
-      padding: 12px 4px;
+      padding: 10px 4px;
       font-size: 1rem;
       font-family: inherit;
       color: var(--text-primary);
       outline: none;
-      transition: border-color 0.3s ease;
+      transition: border-color 0.3s ease, transform 0.2s ease;
     }
 
     .task-input::placeholder {
@@ -166,6 +295,7 @@
 
     .task-input:focus {
       border-color: var(--accent);
+      transform: translateY(-1px);
     }
 
     .add-btn {
@@ -173,25 +303,27 @@
       height: 40px;
       border-radius: 50%;
       border: 2px solid var(--accent);
-      background: transparent;
+      background: #FFF7ED;
       color: var(--accent);
       font-size: 1.25rem;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       flex-shrink: 0;
+      box-shadow: 0 6px 12px rgba(248, 113, 113, 0.35);
     }
 
     .add-btn:hover {
       background: var(--accent);
       color: var(--bg-primary);
-      transform: scale(1.05);
+      transform: translateY(-1px) scale(1.05);
     }
 
     .add-btn:active {
-      transform: scale(0.95);
+      transform: translateY(0) scale(0.96);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
     }
 
     @keyframes shake {
@@ -204,29 +336,69 @@
       animation: shake 0.3s ease;
     }
 
+    /* 贴纸统计条 */
+    .sticker-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .sticker-collection {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .sticker-pill {
+      background: #FFF7ED;
+      border-radius: 999px;
+      padding: 2px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: 1px dashed rgba(248, 113, 113, 0.5);
+      font-size: 0.78rem;
+    }
+
+    .sticker-pill-emoji {
+      font-size: 0.95rem;
+    }
+
+    /* 列表 */
     .task-list {
       list-style: none;
+      margin-top: 4px;
     }
 
     .task-item {
       display: flex;
       align-items: center;
-      padding: 16px 0;
-      border-bottom: 1px solid var(--border);
+      padding: 12px 10px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid rgba(229, 231, 235, 0.8);
       position: relative;
       cursor: pointer;
-      transition: background-color 0.2s ease;
+      transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 3px 6px rgba(15, 23, 42, 0.06);
+      margin-bottom: 8px;
+      animation: slideIn 0.25s ease-out;
     }
 
-    .task-item:last-child {
-      border-bottom: none;
+    .task-item:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 12px rgba(15, 23, 42, 0.12);
     }
 
     .checkbox-wrapper {
       position: relative;
       width: 22px;
       height: 22px;
-      margin-right: 16px;
+      margin-right: 14px;
       flex-shrink: 0;
     }
 
@@ -236,10 +408,11 @@
       border: 2px solid var(--border);
       border-radius: 50%;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.25s ease;
       display: flex;
       align-items: center;
       justify-content: center;
+      background: #F9FAFB;
     }
 
     .task-item:hover .checkbox {
@@ -249,6 +422,7 @@
     .checkbox.checked {
       background: var(--success);
       border-color: var(--success);
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
     }
 
     .checkbox-check {
@@ -257,7 +431,7 @@
       border: solid var(--bg-primary);
       border-width: 0 2px 2px 0;
       transform: rotate(45deg) scale(0);
-      transition: transform 0.2s ease;
+      transition: transform 0.17s ease-out;
     }
 
     .checkbox.checked .checkbox-check {
@@ -266,32 +440,53 @@
 
     .task-text {
       flex: 1;
-      font-size: 1rem;
+      font-size: 0.98rem;
       color: var(--text-primary);
-      transition: all 0.3s ease;
+      transition: all 0.25s ease;
       position: relative;
+    }
+
+    .task-item.completed {
+      background: linear-gradient(120deg, #ECFDF3, #E0F2FE);
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 8px 16px rgba(34, 197, 94, 0.25);
     }
 
     .task-item.completed .task-text {
       color: var(--text-secondary);
       text-decoration: line-through;
-      text-decoration-color: var(--success);
+      text-decoration-color: rgba(22, 163, 74, 0.8);
+    }
+
+    .task-item.completed::after {
+      content: 'DONE';
+      position: absolute;
+      top: -8px;
+      right: 12px;
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #22C55E;
+      color: #ECFDF3;
+      letter-spacing: 0.12em;
+      box-shadow: 0 4px 10px rgba(22, 163, 74, 0.45);
+      animation: sticker-pop 0.25s ease-out;
     }
 
     .delete-btn {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border: none;
       background: transparent;
       color: var(--text-secondary);
-      font-size: 1.25rem;
+      font-size: 1.1rem;
       cursor: pointer;
       opacity: 0;
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
+      border-radius: 999px;
     }
 
     .task-item:hover .delete-btn {
@@ -305,34 +500,30 @@
 
     .empty-state {
       text-align: center;
-      padding: 48px 0;
+      padding: 40px 0 24px;
       color: var(--text-secondary);
     }
 
     .empty-state-text {
       font-family: 'Noto Serif SC', Georgia, serif;
-      font-size: 1.125rem;
-      margin-bottom: 8px;
+      font-size: 1.05rem;
+      margin-bottom: 6px;
     }
 
     .empty-state-sub {
-      font-size: 0.875rem;
+      font-size: 0.85rem;
       font-weight: 300;
     }
 
     @keyframes slideIn {
       from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(-6px);
       }
       to {
         opacity: 1;
         transform: translateY(0);
       }
-    }
-
-    .task-item {
-      animation: slideIn 0.3s ease-out;
     }
 
     @keyframes slideOut {
@@ -342,23 +533,41 @@
       }
       to {
         opacity: 0;
-        transform: translateX(-20px);
+        transform: translateX(-12px);
       }
     }
 
     .task-item.deleting {
-      animation: slideOut 0.25s ease-out forwards;
+      animation: slideOut 0.23s ease-out forwards;
+    }
+
+    @keyframes sticker-pop {
+      0% { transform: scale(0.7) translateY(-4px); opacity: 0; }
+      70% { transform: scale(1.1) translateY(0); opacity: 1; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
     }
 
     @media (max-width: 600px) {
+      body {
+        padding: 20px 12px 32px;
+      }
+
       .container {
-        padding: 32px 20px;
-        box-shadow: none;
-        background: transparent;
+        padding: 20px 16px 16px;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.14);
       }
 
       h1 {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
+      }
+
+      .overview-card {
+        padding: 12px 12px 12px 12px;
+      }
+
+      .overview-right {
+        width: 70px;
+        height: 70px;
       }
     }
   </style>
@@ -366,9 +575,31 @@
 <body>
   <div class="container">
     <header>
-      <h1>每日待办</h1>
-      <p class="date" id="current-date"></p>
+      <div class="title-block">
+        <h1>每日待办</h1>
+        <p class="date" id="current-date"></p>
+      </div>
+      <div class="day-sticker">
+        <span class="day-sticker-emoji" id="mood-emoji">🌤️</span>
+        <span id="mood-text">今天也要好好加油呀</span>
+      </div>
     </header>
+
+    <section class="overview-card" aria-label="今日概览">
+      <div class="overview-left">
+        <div class="overview-title">今日概览</div>
+        <div class="overview-main">
+          已完成 <span class="overview-highlight" id="overview-completed">0</span> / <span id="overview-total">0</span> 个任务
+        </div>
+        <div class="overview-sub" id="overview-subtext">先写下今天最重要的三件事 ✍️</div>
+        <div class="overview-progress">
+          <div class="overview-progress-bar" id="overview-progress-bar"></div>
+        </div>
+      </div>
+      <div class="overview-right">
+        <span class="overview-emoji" id="overview-emoji">📌</span>
+      </div>
+    </section>
 
     <div class="verse-container" id="verse-container">
       <span class="verse-label">今日金句</span>
@@ -377,14 +608,19 @@
     </div>
 
     <div class="input-group">
-      <input 
-        type="text" 
-        class="task-input" 
-        id="task-input" 
-        placeholder="添加新任务..." 
+      <input
+        type="text"
+        class="task-input"
+        id="task-input"
+        placeholder="写下你今天要做的一件小事..."
         maxlength="100"
       >
-      <button class="add-btn" id="add-btn">+</button>
+      <button class="add-btn" id="add-btn" aria-label="添加任务">+</button>
+    </div>
+
+    <div class="sticker-strip">
+      <span>今日贴纸：</span>
+      <div class="sticker-collection" id="sticker-collection"></div>
     </div>
 
     <ul class="task-list" id="task-list"></ul>
@@ -444,6 +680,18 @@
       }
     ];
 
+    const MOODS = [
+      { emoji: '🌤️', text: '今天也要好好加油呀' },
+      { emoji: '🌈', text: '小步慢走也在前进' },
+      { emoji: '☕️', text: '先完成一件小事，再喝一口咖啡' },
+      { emoji: '🌱', text: '一点一点，今天也在长大' },
+      { emoji: '📖', text: '把今天翻成值得的一页' }
+    ];
+
+    const STICKERS = [
+      '📌', '✅', '🌟', '🧸', '📆', '✨', '🍀', '☕️', '📚', '🕊️'
+    ];
+
     let tasks = [];
 
     function formatDate() {
@@ -470,6 +718,16 @@
       document.getElementById('verse-ref').textContent = verse.ref;
     }
 
+    function displayMood() {
+      const today = new Date();
+      const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 86400000);
+      const moodIndex = dayOfYear % MOODS.length;
+      const mood = MOODS[moodIndex];
+      document.getElementById('mood-emoji').textContent = mood.emoji;
+      document.getElementById('mood-text').textContent = mood.text;
+      document.getElementById('overview-emoji').textContent = STICKERS[dayOfYear % STICKERS.length];
+    }
+
     function loadTasks() {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
@@ -485,16 +743,81 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
     }
 
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function renderStickers() {
+      const stickerContainer = document.getElementById('sticker-collection');
+      const completedCount = tasks.filter(t => t.completed).length;
+      stickerContainer.innerHTML = '';
+
+      if (completedCount === 0) {
+        stickerContainer.innerHTML = '<span class="sticker-pill"><span class="sticker-pill-emoji">📭</span><span>今天还没有贴纸</span></span>';
+        return;
+      }
+
+      const maxStickers = Math.min(completedCount, 6);
+
+      for (let i = 0; i < maxStickers; i++) {
+        const emoji = STICKERS[i % STICKERS.length];
+        const pill = document.createElement('span');
+        pill.className = 'sticker-pill';
+        pill.innerHTML = `<span class="sticker-pill-emoji">${emoji}</span><span>第 ${i + 1} 贴</span>`;
+        stickerContainer.appendChild(pill);
+      }
+
+      if (completedCount > maxStickers) {
+        const more = document.createElement('span');
+        more.className = 'sticker-pill';
+        more.innerHTML = `<span class="sticker-pill-emoji">➕</span><span>还有 ${completedCount - maxStickers} 贴</span>`;
+        stickerContainer.appendChild(more);
+      }
+    }
+
+    function renderOverview() {
+      const completed = tasks.filter(t => t.completed).length;
+      const total = tasks.length;
+      const completedEl = document.getElementById('overview-completed');
+      const totalEl = document.getElementById('overview-total');
+      const bar = document.getElementById('overview-progress-bar');
+      const sub = document.getElementById('overview-subtext');
+
+      completedEl.textContent = completed;
+      totalEl.textContent = total;
+
+      const ratio = total === 0 ? 0 : (completed / total) * 100;
+      bar.style.width = ratio + '%';
+
+      if (total === 0) {
+        sub.textContent = '先写下今天最重要的三件事 ✍️';
+      } else if (ratio === 0) {
+        sub.textContent = '万事开头难，从第一件开始就好。';
+      } else if (ratio < 40) {
+        sub.textContent = '不错，有了开始，慢慢来就好。';
+      } else if (ratio < 80) {
+        sub.textContent = '已经超过一半啦，很棒！';
+      } else if (ratio < 100) {
+        sub.textContent = '就差一点点，收个漂亮的尾巴 ✨';
+      } else {
+        sub.textContent = '全部完成！给今天盖一个大大的完成章 ✅';
+      }
+    }
+
     function renderTasks() {
       const list = document.getElementById('task-list');
-      
+
       if (tasks.length === 0) {
         list.innerHTML = `
           <li class="empty-state">
             <p class="empty-state-text">今日无事一身轻</p>
-            <p class="empty-state-sub">添加一个任务开始吧</p>
+            <p class="empty-state-sub">写下一件小事，给今天贴上第一枚贴纸</p>
           </li>
         `;
+        renderOverview();
+        renderStickers();
         return;
       }
 
@@ -509,18 +832,15 @@
           <button class="delete-btn" onclick="event.stopPropagation(); deleteTask(${task.id})">×</button>
         </li>
       `).join('');
-    }
 
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
+      renderOverview();
+      renderStickers();
     }
 
     function addTask() {
       const input = document.getElementById('task-input');
       const text = input.value.trim();
-      
+
       if (!text) {
         input.classList.add('shake');
         setTimeout(() => input.classList.remove('shake'), 300);
@@ -557,14 +877,14 @@
           tasks = tasks.filter(t => t.id !== id);
           saveTasks();
           renderTasks();
-        }, 250);
+        }, 230);
       }
     }
 
     function init() {
       document.getElementById('current-date').textContent = formatDate();
-
       displayDailyVerse();
+      displayMood();
 
       loadTasks();
       renderTasks();
